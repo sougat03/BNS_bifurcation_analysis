@@ -1,0 +1,44 @@
+import numpy as np
+import matplotlib.pyplot as plt
+from scipy.integrate import odeint
+
+def pn_system(y, t, eta):
+    r, r_dot = y
+    
+    A1 = (3 - eta) / 2 
+    A2 = (9 + 4 * eta) / 8 
+    B0 = (32 / 5) * eta  
+    
+    
+    acc_conservative = - (1 / r**2) * (1 + A1 / r + A2 / r**2)
+    
+    acc_dissipative = (B0 / r**5) * r_dot
+    
+    return [r_dot, acc_conservative + acc_dissipative]
+
+# Parameters
+eta = 0.16  # q = m1/m2 ≈ 0.8 (stable case)
+t = np.linspace(0, 5000, 100000)  # Long integration time
+
+# Initial conditions
+r0 = 10  # Initial separation
+r_dot0 = 0  # Initially circular
+
+
+sol = odeint(pn_system, [r0, r_dot0], t, args=(eta,), 
+             atol=1e-10, rtol=1e-8, mxstep=100000)
+
+
+r_min = 2  # Stop plotting when r < 2 (avoid singularity)
+valid = sol[:, 0] >= r_min
+r = sol[valid, 0]
+r_dot = sol[valid, 1]
+
+plt.figure(figsize=(10, 6))
+plt.plot(r, r_dot, 'b-', label=f'$\eta = {eta}$ (stable inspiral)')
+plt.xlabel('Separation $r$ [$GM/c^2$]', fontsize=14)
+plt.ylabel('Radial velocity $\dot{r}$ [$c$]', fontsize=14)
+plt.title('BNS Inspiral: Phase Plot (2.5PN Dynamics)', fontsize=16)
+plt.grid(True)
+plt.legend()
+plt.show()
