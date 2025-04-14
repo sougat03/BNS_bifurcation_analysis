@@ -1,0 +1,12 @@
+eta_values = np.linspace(0.01, 0.24, 100)
+r_stable = [6 / (1 + np.sqrt(1 - 6*eta)) if eta < 1/6 else np.nan for eta in eta_values]
+
+plt.figure(figsize=(8, 6))
+plt.plot(eta_values, r_stable, 'r-', linewidth=2, label='Stable circular orbit')
+plt.axvline(x=1/6, color='k', linestyle='--', label='Critical $\eta = 1/6$')
+plt.xlabel('Symmetric mass ratio $\eta$', fontsize=14)
+plt.ylabel('Radius $r_{\mathrm{stable}}$ [$GM/c^2$]', fontsize=14)
+plt.title('Bifurcation Diagram: Saddle-Node at $\eta = 1/6$', fontsize=16)
+plt.grid(True)
+plt.legend()
+plt.show()
